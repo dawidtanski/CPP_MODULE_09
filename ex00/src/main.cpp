@@ -1,8 +1,12 @@
 #include "../inc/BitcoinExchange.hpp"
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 
 int main(int argc, char *argv[]){
+
+	BitcoinExchange btcEx;
+	std::string line;
 
 	if (argc != 2){
 		std::cerr << "Wrong number of arguments!" << std::endl;
@@ -14,6 +18,23 @@ int main(int argc, char *argv[]){
 		std::cerr << "Cannot open the file!" << std::endl;
 		return 1;
 	}
+	if (!std::getline(file, line))
+		return 1;
+	while (std::getline(file, line)){
+		if (line.empty())
+			continue;
+
+		size_t pos = line.find(" | ");
+		if (pos == std::string::npos){
+			std::cerr << "Error: bad input => " << line << std::endl;
+			continue;
+		}
+		std::string date = line.substr(0, pos);
+		std::string priceStr = line.substr(pos + 3);
+		float price = std::atof(priceStr.c_str());
+		btcEx.mapPush(date, price);
+		}
+	// btcEx.mapIterCout();
 
 	return 0;
 }
