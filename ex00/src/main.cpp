@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cstdlib>
 
+
 int main(int argc, char *argv[]){
 
 	BitcoinExchange btcEx;
@@ -30,9 +31,20 @@ int main(int argc, char *argv[]){
 			continue;
 		}
 		std::string date = line.substr(0, pos);
-		std::string priceStr = line.substr(pos + 3);
-		float price = std::atof(priceStr.c_str());
-		btcEx.mapPush(date, price);
+		std::string valueStr = line.substr(pos + 3);
+
+		float value = atof(valueStr.c_str());
+		
+		if (!dateValidation(date)) {
+			std::cerr << "Error: bad input => " << date << std::endl;
+			continue;
+		}
+		
+		if (!valueValidation(value))
+			continue;
+		
+		float exchangeRate = btcEx.getClosestRate(date);
+		std::cout << date << " => " << value << " = " << (exchangeRate * value) << std::endl;
 		}
 	// btcEx.mapIterCout();
 
