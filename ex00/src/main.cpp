@@ -33,10 +33,14 @@ int main(int argc, char *argv[]){
 		std::string date = line.substr(0, pos);
 		std::string valueStr = line.substr(pos + 3);
 
-		float value = atof(valueStr.c_str());
+		float value;
 		
 		if (!dateValidation(date)) {
 			std::cerr << "Error: bad input => " << date << std::endl;
+			continue;
+		}
+		if (!parseValue(valueStr, value)) {
+			std::cerr << "Error: bad input => " << line << std::endl;
 			continue;
 		}
 		

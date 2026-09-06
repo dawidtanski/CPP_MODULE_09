@@ -4,13 +4,14 @@
 RPN::RPN() : _hasError(false) {
 }
 
-RPN::RPN(const RPN& other) {
+RPN::RPN(const RPN& other) : _hasError(other._hasError) {
 	_stack = other._stack;
 }
 
 RPN& RPN::operator=(const RPN& other) {
 	if (this != &other) {
 		_stack = other._stack;
+		_hasError = other._hasError;
 	}
 	return *this;
 }
@@ -22,11 +23,16 @@ RPN::~RPN() {}
 Token RPN::initToken(std::string tokenType, char tknValue){
 
 	Token tkn;
+	tkn.type = Token::INVALID;
+	tkn.value = 0;
+	tkn.op = 0;
 	
 	if (tokenType == "NUMBER"){
+		tkn.type = Token::NUMBER;
 		tkn.value = static_cast<double>(tknValue - '0');
 	}
 	else if (tokenType == "OPERATOR"){
+		tkn.type = Token::OPERATOR;
 		tkn.op = tknValue;
 	}
 	else{
@@ -53,6 +59,7 @@ double RPN::useOperator(char op, double a, double b){
 		case '/':
 			if (b == 0){
 				std::cerr << "Cant divide by 0" << std::endl;
+				_hasError = true;
 				return -1.0;
 			}
 			return a / b;
@@ -89,6 +96,11 @@ void RPN::calculate(char op){
 
 double	RPN::parse(std::string equation){
 	int i = 0;
+	if (equation.empty()){
+		std::cerr << "Error: invalid expression" << std::endl;
+		_hasError = true;
+		return 0;
+	}
 
 	while (equation[i]){
 		if (equation[i] == ' '){

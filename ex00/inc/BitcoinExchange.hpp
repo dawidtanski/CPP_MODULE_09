@@ -5,6 +5,8 @@
 #include <string>
 #include <fstream>
 #include <cstdlib>
+#include <cerrno>
+#include <limits>
 
 class BitcoinExchange{
 
@@ -30,5 +32,6 @@ public:
 // Helpers
 int dateToInt(const std::string &s);
 bool isNumber(const std::string &s);
+bool parseValue(const std::string &s, float &value);
 bool dateValidation(std::string date);
 bool valueValidation(float value);

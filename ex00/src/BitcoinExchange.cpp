@@ -49,10 +49,10 @@ void BitcoinExchange::loadData(){
 		}
 		std::string date = line.substr(0, pos);
 		std::string valueStr = line.substr(pos + 1);
-		float value = atof(valueStr.c_str());
-		if (!dateValidation(date))
+		float value;
+		if (!parseValue(valueStr, value))
 			continue;
-		if (value < 0)
+		if (!dateValidation(date))
 			continue;
 		_databaseCSV.insert(std::make_pair(date, value));
 	}
@@ -105,6 +105,20 @@ bool isNumber(const std::string &s)
     return end != s.c_str() && *end == '\0';
 }
 
+bool parseValue(const std::string &s, float &value)
+{
+	char *end;
+	errno = 0;
+	double parsed = strtod(s.c_str(), &end);
+	if (end == s.c_str() || *end != '\0' || errno == ERANGE
+		|| parsed != parsed
+		|| parsed > std::numeric_limits<float>::max()
+		|| parsed < -std::numeric_limits<float>::max())
+		return false;
+	value = static_cast<float>(parsed);
+	return true;
+}
+
 bool	dateValidation(std::string date){
 	if (date.length() != 10)
 		return false;
@@ -115,16 +129,18 @@ bool	dateValidation(std::string date){
 	datecp.erase(4,1);
 	if (!isNumber(datecp))
 		return false;
-	if ((1000 * (date[0] - '0') + 100 * (date[1] - '0')
-	+ 10 * (date[2] - '0') + (date[3] - '0')) > 2026 ||
-	(1000 * (date[0] - '0') + 100 * (date[1] - '0')
-	+ 10 * (date[2] - '0') + (date[3] - '0')) <= 0)
+	int year = 1000 * (date[0] - '0') + 100 * (date[1] - '0')
+		+ 10 * (date[2] - '0') + (date[3] - '0');
+	if (year <= 0)
 		return false;
-	if ((10 * (date[5] - '0') + (date[6] - '0')) > 12 || 
-		(10 * (date[5] - '0') + (date[6] - '0')) <= 0)
+	int month = 10 * (date[5] - '0') + (date[6] - '0');
+	int day = 10 * (date[8] - '0') + (date[9] - '0');
+	if (month <= 0 || month > 12)
 		return false;
-	if ((10 * (date[8] - '0') + (date[9] - '0')) > 31 || 
-		(10 * (date[8] - '0') + (date[9] - '0')) <= 0)
+	int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	if (month == 2 && (year % 400 == 0 || (year % 4 == 0 && year % 100 != 0)))
+		daysInMonth[1] = 29;
+	if (day <= 0 || day > daysInMonth[month - 1])
 		return false;
 	// std::cout << "Date-month-day valid format" << std::endl;
 	return true;
@@ -132,11 +148,11 @@ bool	dateValidation(std::string date){
 
 bool valueValidation(float value){
 	if (value < 0){
-		std::cerr << "Error: not a positive number" << std::endl;
+		std::cerr << "Error: not a positive number." << std::endl;
 		return false;
 	}
 	if (value > 1000){
-		std::cerr << "Error: too large number" << std::endl;
+		std::cerr << "Error: too large a number." << std::endl;
 		return false;
 	}
 	return true;

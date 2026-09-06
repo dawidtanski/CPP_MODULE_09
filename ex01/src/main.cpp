@@ -10,7 +10,8 @@ int main(int argc, char *argv[]){
 	RPN rpn;
 	std::string input(argv[1]);
 	double result = rpn.parse(input);
-	if (!rpn.hasError())
-		std::cout << result << std::endl;
+	if (rpn.hasError())
+		return 1;
+	std::cout << result << std::endl;
 	return 0;
 }
