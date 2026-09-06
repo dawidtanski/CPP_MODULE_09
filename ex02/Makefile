@@ -6,7 +6,7 @@
 #    By: dtanski <dtanski@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/31 05:10:32 by dtanski           #+#    #+#              #
-#    Updated: 2026/01/06 11:39:00 by dtanski          ###   ########.fr        #
+#    Updated: 2026/09/06 11:19:20 by dtanski          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ CFLAGS = -Wall -Wextra -Werror -Wshadow -std=c++98 -g -I inc/
 SRC_DIR = src
 OBJ_DIR = obj
 SRC =	src/main.cpp \
-		src/RPN.cpp\
+		src/PmergeMe.cpp
 		
 OBJ = $(SRC:src/%.cpp=obj/%.o)
 
